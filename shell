@@ -1,0 +1,5 @@
+#!/usr/bin/env python -i
+
+import sys
+sys.path += ('/usr/local/google_appengine',)
+sys.path += ['/usr/local/google_appengine/lib/' + x for x in ('django', 'webob', 'yaml')]
