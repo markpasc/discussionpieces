@@ -14,12 +14,11 @@ class Handlr(webapp.RequestHandler):
 
 class MainHandler(Handlr):
     def get(self):
-        self.render('main', { 'msg': "Hello world!" })
+        self.render('main', msg="Hello world!")
 
 
 urlmap = (
     ('/', MainHandler),
-    
     ('/dev', MainHandler),
 )
 
