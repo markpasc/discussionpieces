@@ -42,12 +42,13 @@ class MainHandler(Handlr):
 
 class StuffHandler(Handlr):
     def get(self):
-        stuff = Piece.all().fetch()
+        stuff = Piece.all()
         stuff_data = [dict(x) for x in stuff]
         self.response.out.write('CANHAZ ' + json.dumps(stuff_data))
 
 urlmap = (
-    ('/', StuffHandler),
+    ('/stuff', StuffHandler),
+    ('/', MainHandler),
 )
 
 def main():
