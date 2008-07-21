@@ -4,6 +4,29 @@
 {% block content_header %}hi{% endblock %}
 {% block content %}
 
-<p>{{ msg }}</p>
+    <div id="sky">
+        
+    </div>
+    
+    <div id="ground">
+        
+        <!-- example piece -->
+        <div class="piece">
+            <img src="/assets/shirt_magenta_32.png">
+        </div>
+        
+    </div>
+    
+    <script type="text/javascript">
+    $(document).ready(function () {
+        $('.piece').draggable({
+            'containment': '#ground'
+        });
+        
+        $('.piece').click({
+            // Load piece's data into display bubble.
+        });
+    });
+    </script>
 
 {% endblock %}

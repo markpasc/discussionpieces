@@ -2,6 +2,11 @@
 <html><head>
     <meta http-equiv="Content-Type" value="text/html; charset=utf-8">
     <title>{% block title %}{% endblock %}</title>
+    
+    <link rel="stylesheet" type="text/css" href="/assets/styles.css">
+    <script type="text/javascript" src="/assets/jquery.js"></script>
+    <script type="text/javascript" src="/assets/jquery.ui.all.js"></script>
+    
 </head><body>
     
     <h1>{% block content_header %}{% endblock %}</h1>
@@ -9,4 +14,3 @@
     {% block content %}{% endblock %}
     
 </body></html>
-    
