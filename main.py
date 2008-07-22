@@ -33,7 +33,7 @@ class StuffHandler(Handlr):
     def get(self):
         stuff = Piece.all()
         stuff_data = [dict(x) for x in stuff]
-        self.response.out.write('CANHAZ ' + json.dumps(stuff_data))
+        self.response.out.write(json.dumps(stuff_data))
 
 urlmap = (
     ('/stuff', StuffHandler),

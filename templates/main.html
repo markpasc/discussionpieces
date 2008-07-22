@@ -10,21 +10,27 @@
     
     <div id="ground">
         
-        <!-- example piece -->
-        <div class="piece">
-            <img src="/assets/shirt_magenta_32.png">
-        </div>
-        
     </div>
     
     <script type="text/javascript">
+    function piececlick(e) {
+        alert('omg hi from ' + this);
+        // Load piece's data into display bubble.
+    }
+    
     $(document).ready(function () {
-        $('.piece').draggable({
-            'containment': '#ground'
-        });
-        
-        $('.piece').click({
-            // Load piece's data into display bubble.
+        $.getJSON("/stuff", function (data) {
+            $.each(data, function (i, item) {
+                var div = $("<div/>")
+                    .attr("class", "piece")
+                    .attr("id", "piece-" + item.id)
+                    .appendTo('#ground');
+                var img = $("<img/>")
+                    .attr("src", item.src)
+                    .appendTo(div);
+                div.draggable({ 'containment': '#ground' });
+                div.click(piececlick);
+            });
         });
     });
     </script>
