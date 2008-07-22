@@ -12,7 +12,11 @@ from models import *
 class ModelEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, db.Model):
-            obj = dict(obj)
+            jobj = dict([(k, getattr(obj, k, None)) for k in obj.properties().keys()])
+            jobj['key'] = str(obj.key())
+            return jobj
+        elif isinstance(obj, db.Property):
+            return str(obj)
         return super(ModelEncoder, self).default(obj)
 
 class Handlr(webapp.RequestHandler):
@@ -24,20 +28,32 @@ class Handlr(webapp.RequestHandler):
         if kwargs:
             data.update(kwargs)    
         self.response.out.write(template.render('templates/' + tmpl + '.html', data))
+    def oops404(self, msg=None):
+        self.response.set_status(404)
+        self.response.headers['Content-Type'] = 'text/plain'
+        self.response.out.write(msg if msg else 'Not found')
 
 class MainHandler(Handlr):
     def get(self):
         self.render('main', msg="Hello world!")
 
 class StuffHandler(Handlr):
-    def get(self):
+    def get(self, key=None):
         stuff = Piece.all()
-        stuff_data = [dict(x) for x in stuff]
-        self.response.out.write(json.dumps(stuff_data))
+        stuff_data = stuff.fetch(10)
+        self.json(stuff_data)
+    def post(self, key=None):
+        p = Piece.get(key)
+        if not p:
+            self.oops404('No such piece')
+            return
+        (p.x, p.y) = [int(self.request.get(m)) for m in ('x', 'y')]
+        p.save()
+        self.json(p)
 
 urlmap = (
-    ('/stuff', StuffHandler),
-    ('/', MainHandler),
+    (r'/stuff(?:/(?P<key>\w+))?', StuffHandler),
+    (r'/', MainHandler),
 )
 
 def main():

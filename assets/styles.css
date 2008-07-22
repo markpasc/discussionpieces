@@ -1,8 +1,6 @@
 
 body { position: relative; height: 100%; }
 
-h1 { height: 100%; }
-
 body, #content, #sky, #ground {
     margin: 0;
     padding: 0;
@@ -27,3 +25,22 @@ body, #content, #sky, #ground {
 }
 
 #ground .awesome { width: 32px; }
+
+.piece {
+    position: absolute;
+    z-index: 9000;
+}
+
+#cloud {
+    display: none;
+    color: white;
+    position: absolute;
+    background: rgba(0, 0, 0, 0.5);
+    width: 300px;
+    height: 200px;
+    padding: 10px;
+}
+
+#cloud-title { font-size: 18px; }
+#cloud-desc { font-size: 14px; }
+#cloud-icon { float: left; margin: 0 4px 4px 0; }
