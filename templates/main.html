@@ -5,6 +5,7 @@
 {% block content %}
 
     <div id="sky"></div>
+    <canvas id="sky-bg" width="1000" height="1000"></canvas>
     <div id="ground"></div>
     
     <div id="cloud">
@@ -29,7 +30,44 @@
         };
     }
     
-    $(document).ready(function () {
+    function drawSky () {
+        var sky = $('#sky');
+        var canvas = $('#sky-bg');
+        var c = canvas.get(0).getContext('2d');
+        
+        c.fillStyle = 'rgb(200, 0, 0)'
+        c.fillRect(0, 0, 1000, 1000);
+        
+        c.fillStyle = 'red';
+        c.save();
+        c.translate(500, 500);
+
+        c.moveTo(0, 0);
+        for (var θ = 0; θ < 360; θ += 20) {
+            c.save();
+            
+            c.rotate(θ * Math.PI / 180);
+            c.lineTo(710, 0);
+            
+            c.rotate(10 * Math.PI / 180);
+            c.lineTo(710, 0);
+            
+            c.lineTo(0, 0);
+            c.fill();
+
+            c.restore();
+        }
+        
+        var grad = c.createRadialGradient(0, 0, 20, 0, 0, 500);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0.03)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+        c.fillStyle = grad;
+        c.fillRect(-500, -500, 1000, 1000);
+        
+        c.restore();
+    }
+    
+    function setUpStuff () {
         $.getJSON("/stuff", function (data) {
             $.each(data, function (i, item) {
                 var div = $("<div/>")
@@ -54,6 +92,11 @@
                 div.click(clickerFor(item));
             });
         });
+    }
+
+    $(document).ready(function () {
+        drawSky();
+        setUpStuff();
     });
     </script>
 

@@ -6,14 +6,17 @@ body, #content, #sky, #ground {
     padding: 0;
 }
 
-#sky {
+#sky, #sky-bg {
     position: fixed;
     width: 100%;
     height: 100%;
     left: 0;
-    bottom: 300px;
-    background: #f00 url(sky.jpg) no-repeat bottom center;
+    top: 0;
+    background: transparent;
 }
+
+#sky { background: blue; }
+#sky-bg { background: white; }
 
 #ground {
     position: fixed;
