@@ -9,6 +9,9 @@
     <div id="sky"></div>
     <div id="grass"></div>
     
+    {% if user %}
+    <p id="user-greeting">Hi, {{ user.nickname }}! <a href="{{ logout_url }}">Log out</a></p>
+    
     <canvas id="add-button" width="1000" height="1000"></canvas>
     
     <div id="add-dialog" title="Add piece">
@@ -40,9 +43,13 @@
             </p>
         </form>
     </div>
+    {% else %}
+    <p id="user-login"><a href="{{ login_url }}">Log in</a></p>
+    {% endif %}
     
     <div id="cloud">
         <h1 id="cloud-title"></h1>
+        <p id="cloud-creator"></p>
         <div>
             <img width="32" height="32" src="/assets/1.gif" id="cloud-icon">
             <span id="cloud-desc"></span>
@@ -57,6 +64,7 @@
             // Load piece's data into display bubble.
             $('#cloud').hide();
             $('#cloud-title').text(item.name);
+            $('#cloud-creator').text(item.creator.nickname);
             $('#cloud-desc').text(item.desc);
             $('#cloud-icon').attr('src', '/assets/icons/' + item.icon);
             
@@ -281,8 +289,10 @@
         drawGrass();
         setUpStuff();
         
-        drawAddButton();
-        setUpAddButton();
+        if ($('#add-button').get(0)) {
+            drawAddButton();
+            setUpAddButton();
+        }
         
         $(document).click(function () {
             if ($('#cloud').is(':visible')) {
