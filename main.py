@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+import re
+
 import wsgiref.handlers
 from google.appengine.ext import webapp
 from google.appengine.ext import db
@@ -17,7 +19,9 @@ class ModelEncoder(json.JSONEncoder):
             jobj['key'] = str(obj.key())
             return jobj
         elif isinstance(obj, users.User):
-            jobj = dict(nickname=obj.nickname(), email=obj.email())
+            jobj = dict(nickname=obj.nickname(),
+                        safe_nickname=re.sub(r'(?<=@...).*\.(?=[^\.]+$)', '...', obj.nickname()),
+                        email=obj.email())
             return jobj
         elif isinstance(obj, db.Property):
             return str(obj)
@@ -31,7 +35,7 @@ class Handlr(webapp.RequestHandler):
             data = {}
         if kwargs:
             data.update(kwargs)
-            
+        
         data.update({
             'user':       users.get_current_user(),
             'login_url':  users.create_login_url('/'),
