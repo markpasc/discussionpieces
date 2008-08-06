@@ -57,3 +57,29 @@ body, #content, #sky, #grass {
     right: 10px;
     bottom: 10px;    
 }
+
+form p {
+    clear: both;
+    padding-top: 10px;
+    width: 500px;
+}
+form p label {
+    float: left;
+    width: 100px;
+    text-align: right;
+}
+form p span.input {
+    float: right;
+    width: 380px;
+    text-align: left;
+}
+form p textarea, form p input {
+    width: 300px;
+    font: 1.1em "Helvetica Neue", Helvetica, Verdana, Arial, sans-serif;
+}
+form p select {
+    font: 1.1em "Helvetica Neue", Helvetica, Verdana, Arial, sans-serif;
+}
+form p textarea {
+    height: 100px;
+}

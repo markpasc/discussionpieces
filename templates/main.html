@@ -11,8 +11,29 @@
     
     <canvas id="add-button" width="1000" height="1000"></canvas>
     
-    <div id="add-dialog">
-        <p>HI</p>
+    <div id="add-dialog" title="Add piece">
+        <form>
+            <p>
+                <label for="add-field-title">Title:</label>
+                <span class="input">
+                    <input name="title" id="add-field-title">
+                </span>
+            </p>
+            <p>
+                <label for="add-field-icon">Icon:</label>
+                <span class="input">
+                    <select name="icon" id="add-field-icon">
+                        <option value="magenta_shirt_32.png">Magenta Shirt</option>
+                    </select>
+                </span>
+            </p>
+            <p>
+                <label for="add-field-desc">Description:</label>
+                <span class="input">
+                    <textarea name="description" id="add-field-desc"></textarea>
+                </span>
+            </p>
+        </form>
     </div>
     
     <div id="cloud">
@@ -194,10 +215,25 @@
         c.restore();
     }
 
+    function addButtonFromDialog () {
+        alert('ADD');
+        $('#add-dialog').dialog("close");
+    }
+
     function setUpAddButton () {
-        $('#add-dialog').hide();
         $('#add-button').click(function (e) {
-            $('#add-dialog').dialog();
+            $('#add-dialog').dialog({
+                "modal": true,
+                "buttons": {
+                    "Add": addButtonFromDialog,
+                    "Cancel": function () { $('#add-dialog').dialog("close") }
+                },
+                "overlay": {
+                    "background-color": "rgba(0, 0, 0, 0.5)"
+                },
+                "height": 400,
+                "width":  500
+            });
         });
     }
 
@@ -210,7 +246,9 @@
         setUpAddButton();
         
         $(document).click(function () {
-            $('#cloud').hide('clip', {}, 200);
+            if ($('#cloud').is(':visible')) {
+                $('#cloud').hide('clip', {}, 200);
+            }
         });
     });
     </script>
