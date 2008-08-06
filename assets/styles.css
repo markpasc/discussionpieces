@@ -1,7 +1,7 @@
 
 body { position: relative; height: 100%; }
 
-body, #content, #sky, #ground {
+body, #content, #sky, #grass {
     margin: 0;
     padding: 0;
 }
@@ -15,19 +15,16 @@ body, #content, #sky, #ground {
     background: transparent;
 }
 
-#sky { background: blue; }
-#sky-bg { background: white; }
-
-#ground {
+#grass, #grass-bg {
     position: fixed;
     width: 100%;
     height: 300px;
     left: 0;
     bottom: 0;
-    background: #0f0 url(grass.jpg) no-repeat top center;
+    background: transparent;
 }
 
-#ground .awesome { width: 32px; }
+#grass .awesome { width: 32px; }
 
 .piece {
     position: absolute;
@@ -38,12 +35,24 @@ body, #content, #sky, #ground {
     display: none;
     color: white;
     position: absolute;
-    background: rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.8);
     width: 300px;
-    height: 200px;
+    /*height: 100px;*/
     padding: 10px;
 }
+
+#cloud-title, #cloud-desc, #cloud-icon { padding: 0; margin: 0; }
 
 #cloud-title { font-size: 18px; }
 #cloud-desc { font-size: 14px; }
 #cloud-icon { float: left; margin: 0 4px 4px 0; }
+
+#add-button {
+    cursor: pointer;
+    
+    position: fixed;
+    width: 32px;
+    height: 32px;
+    right: 10px;
+    bottom: 10px;    
+}

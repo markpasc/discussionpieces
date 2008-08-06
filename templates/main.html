@@ -4,9 +4,16 @@
 {% block content_header %}hi{% endblock %}
 {% block content %}
 
-    <div id="sky"></div>
     <canvas id="sky-bg" width="1000" height="1000"></canvas>
-    <div id="ground"></div>
+    <canvas id="grass-bg" width="1000" height="300"></canvas>
+    <div id="sky"></div>
+    <div id="grass"></div>
+    
+    <canvas id="add-button" width="1000" height="1000"></canvas>
+    
+    <div id="add-dialog">
+        <p>HI</p>
+    </div>
     
     <div id="cloud">
         <h1 id="cloud-title"></h1>
@@ -19,13 +26,21 @@
     <script type="text/javascript">
     function clickerFor (item) {
         return function (e) {
-            //alert('omg hi from ' + item.key);
+            e.stopPropagation();
+            
             // Load piece's data into display bubble.
+            $('#cloud').hide();
             $('#cloud-title').text(item.name);
             $('#cloud-desc').text(item.desc);
             $('#cloud-icon').attr('src', '/assets/icons/' + item.icon);
             $('#cloud').css('left', item.x + 'px');
-            $('#cloud').css('top', (item.y - 140) + 'px')
+            
+            var y = item.y;
+            y += parseInt($('#grass').css('top'));
+            y -= $('#cloud').height();
+            y -= 20;
+            $('#cloud').css('top', y + 'px');
+            
             $('#cloud').show('clip', {}, 200);
         };
     }
@@ -35,9 +50,11 @@
         var canvas = $('#sky-bg');
         var c = canvas.get(0).getContext('2d');
         
+        // dark red bg
         c.fillStyle = 'rgb(200, 0, 0)'
         c.fillRect(0, 0, 1000, 1000);
         
+        // light red shines
         c.fillStyle = 'red';
         c.save();
         c.translate(500, 500);
@@ -47,7 +64,7 @@
             c.save();
             
             c.rotate(θ * Math.PI / 180);
-            c.lineTo(710, 0);
+            c.lineTo(710, 0);  // 710 > ⎷(500² + 500²)
             
             c.rotate(10 * Math.PI / 180);
             c.lineTo(710, 0);
@@ -67,20 +84,60 @@
         c.restore();
     }
     
+    function drawGrass () {
+        var canvas = $('#grass-bg');
+        var c = canvas.get(0).getContext('2d');
+        
+        c.save();
+        c.fillStyle = 'rgb(0, 200, 0)';
+        c.fillRect(0, 0, 1000, 300);
+        
+        c.fillStyle = 'green';
+        c.save();
+        c.translate(500, -500);
+        
+        c.moveTo(0, 0);
+        for (var θ = 30; θ <= 120; θ += 15) {
+            c.save();
+            
+            c.rotate(θ * Math.PI / 180);
+            c.lineTo(1120, 0);  // 1120 > ⎷(1000² + 500²)
+            
+            c.rotate(8 * Math.PI / 180);
+            c.lineTo(1120, 0);
+            
+            c.lineTo(0, 0);
+            c.fill();
+            
+            c.restore();
+        }
+
+        c.restore();
+
+        c.translate(500, 150);
+        var grad = c.createRadialGradient(0, 0, 20, 0, 0, 600);
+        grad.addColorStop(0, 'rgba(0, 0, 0, 0.03)');
+        grad.addColorStop(1, 'rgba(0, 0, 0, 0.6)');
+        c.fillStyle = grad;
+        c.fillRect(-500, -150, 1000, 300);
+
+        c.restore();
+    }
+    
     function setUpStuff () {
         $.getJSON("/stuff", function (data) {
             $.each(data, function (i, item) {
                 var div = $("<div/>")
                     .attr("class", "piece")
                     .attr("id", "piece-" + item.key)
-                    .appendTo('#ground');
+                    .appendTo('#grass');
                 var img = $("<img/>")
                     .attr("src", "/assets/icons/" + item.icon)
                     .appendTo(div);
                 div.css('left', item.x);
                 div.css('top',  item.y);
                 div.draggable({
-                    'containment': '#ground',
+                    'containment': '#grass',
                     'stop': function (e) {
                         item.x = parseInt(div.css('left'));
                         item.y = parseInt(div.css('top'));
@@ -94,9 +151,67 @@
         });
     }
 
+    function drawAddButton () {
+        var canvas = $('#add-button');
+        var c = canvas.get(0).getContext('2d');
+
+        c.save();
+        
+        c.lineWidth = '40';
+        
+        // fill button
+        c.save();
+        c.arc(500, 500, 490, 0, 2 * Math.PI, true);
+        c.beginPath();
+        c.fillStyle = 'rgb(60, 196, 60)';
+        c.fill();
+        c.restore();
+        
+        // draw bevel around
+        c.save();        
+        var grad = c.createLinearGradient(0, 0, 1000, 1000);
+        grad.addColorStop(0,   'rgb(200, 255, 200)');
+        grad.addColorStop(0.5, 'rgb(60, 196, 60)');
+        grad.addColorStop(1,   'rgb(0, 90, 0)');
+        c.strokeStyle = grad;
+        c.beginPath();
+        c.arc(500, 500, 490, 0, 2 * Math.PI, true);
+        c.stroke();
+        c.restore();
+        
+        // draw plus
+        c.save();
+        c.strokeStyle = 'white';
+        c.lineWidth = '100';
+        c.beginPath();
+        c.moveTo(500, 250);
+        c.lineTo(500, 750);
+        c.moveTo(250, 500);
+        c.lineTo(750, 500);
+        c.stroke();
+        c.restore();
+        
+        c.restore();
+    }
+
+    function setUpAddButton () {
+        $('#add-dialog').hide();
+        $('#add-button').click(function (e) {
+            $('#add-dialog').dialog();
+        });
+    }
+
     $(document).ready(function () {
         drawSky();
+        drawGrass();
         setUpStuff();
+        
+        drawAddButton();
+        setUpAddButton();
+        
+        $(document).click(function () {
+            $('#cloud').hide('clip', {}, 200);
+        });
     });
     </script>
 
