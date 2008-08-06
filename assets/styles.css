@@ -44,8 +44,6 @@ body, #content, #sky, #grass {
     z-index: 901;
 }
 
-.ui-dialog { z-index: 902; }
-
 #cloud-title, #cloud-desc, #cloud-icon { padding: 0; margin: 0; }
 
 #cloud-title { font-size: 18px; }
