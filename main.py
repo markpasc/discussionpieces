@@ -35,7 +35,7 @@ class Handlr(webapp.RequestHandler):
 
 class MainHandler(Handlr):
     def get(self):
-        self.render('main', msg="Hello world!")
+        self.render('main', msg="Hello world!", icons=ICONS)
 
 class StuffHandler(Handlr):
     def get(self, key=None):
@@ -43,10 +43,17 @@ class StuffHandler(Handlr):
         stuff_data = stuff.fetch(10)
         self.json(stuff_data)
     def post(self, key=None):
-        p = Piece.get(key)
-        if not p:
-            self.oops404('No such piece')
-            return
+        if key:
+            p = Piece.get(key)
+            if not p:
+                self.oops404('No such piece')
+                return
+        else:
+            p = Piece()
+            (p.creator,) = Person.all().fetch(1)
+            p.icon = self.request.get('icon')
+            p.name = self.request.get('name')
+            p.desc = self.request.get('desc')
         (p.x, p.y) = [int(self.request.get(m)) for m in ('x', 'y')]
         p.save()
         self.json(p)

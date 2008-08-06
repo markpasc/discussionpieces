@@ -23,7 +23,12 @@
                 <label for="add-field-icon">Icon:</label>
                 <span class="input">
                     <select name="icon" id="add-field-icon">
-                        <option value="magenta_shirt_32.png">Magenta Shirt</option>
+                        {% for icon in icons %}
+                            <option value="{{ icon.filename }}" style="background: url(/assets/icons/{{ icon.filename }}) no-repeat left center; height: 36px; padding-left: 45px">
+                                <img src="/assets/icons/{{ icon.filename }}" width="32" height="32">
+                                {{ icon.title|escape }}
+                            </option>
+                        {% endfor %}
                     </select>
                 </span>
             </p>
@@ -54,13 +59,22 @@
             $('#cloud-title').text(item.name);
             $('#cloud-desc').text(item.desc);
             $('#cloud-icon').attr('src', '/assets/icons/' + item.icon);
-            $('#cloud').css('left', item.x + 'px');
             
-            var y = item.y;
-            y += parseInt($('#grass').css('top'));
-            y -= $('#cloud').height();
-            y -= 20;
-            $('#cloud').css('top', y + 'px');
+            var grass_width = $('#grass').width();
+            if (item.x < grass_width / 2) {
+                $('#cloud').css('left', item.x + 'px');
+                $('#cloud').css('right', '');
+            }
+            else {
+                $('#cloud').css('left', '');
+                $('#cloud').css('right', (grass_width - item.x - 32) + 'px');
+            }
+            
+            var y = parseInt($('#grass').height());
+            y -= item.y;
+            //y -= $('#cloud').height();
+            //y -= 20;
+            $('#cloud').css('bottom', y + 'px');
             
             $('#cloud').show('clip', {}, 200);
         };
@@ -144,30 +158,39 @@
 
         c.restore();
     }
+
+    function makePiece (item) {
+        var div = $("<div/>")
+            .attr("class", "piece")
+            .attr("id", "piece-" + item.key)
+            .appendTo('#grass');
+        var img = $("<img/>")
+            .attr("src", "/assets/icons/" + item.icon)
+            .appendTo(div);
+        div.css('left', item.x);
+        div.css('top',  item.y);
+        div.draggable({
+            'containment': '#grass',
+            'start': function (e) {
+                if ($('#cloud').is(':visible')) {
+                    $('#cloud').hide('clip', {}, 200);
+                }
+            },
+            'stop': function (e) {
+                item.x = parseInt(div.css('left'));
+                item.y = parseInt(div.css('top'));
+                $.post("/stuff/" + item.key,
+                    {'x': item.x, 'y': item.y}
+                );
+            }
+        });
+        div.click(clickerFor(item));
+    }
     
     function setUpStuff () {
         $.getJSON("/stuff", function (data) {
             $.each(data, function (i, item) {
-                var div = $("<div/>")
-                    .attr("class", "piece")
-                    .attr("id", "piece-" + item.key)
-                    .appendTo('#grass');
-                var img = $("<img/>")
-                    .attr("src", "/assets/icons/" + item.icon)
-                    .appendTo(div);
-                div.css('left', item.x);
-                div.css('top',  item.y);
-                div.draggable({
-                    'containment': '#grass',
-                    'stop': function (e) {
-                        item.x = parseInt(div.css('left'));
-                        item.y = parseInt(div.css('top'));
-                        $.post("/stuff/" + item.key,
-                            {'x': item.x, 'y': item.y}
-                        );
-                    }
-                });
-                div.click(clickerFor(item));
+                makePiece(item);
             });
         });
     }
@@ -216,12 +239,23 @@
     }
 
     function addButtonFromDialog () {
-        alert('ADD');
-        $('#add-dialog').dialog("close");
+        // TODO: disable form
+        
+        $.post("/stuff", {
+            icon: $('#add-field-icon').val(),
+            name: $('#add-field-title').val(),
+            desc: $('#add-field-desc').val(),
+            x:    parseInt($('#grass').width() / 2),
+            y:    parseInt($('#grass').height() / 2)
+        }, function (data) {
+            makePiece(data);
+            $('#add-dialog').dialog("close");
+        }, "json");
     }
 
     function setUpAddButton () {
         $('#add-button').click(function (e) {
+            $('#add-dialog form').get(0).reset();
             $('#add-dialog').dialog({
                 "modal": true,
                 "buttons": {

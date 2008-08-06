@@ -24,23 +24,27 @@ body, #content, #sky, #grass {
     bottom: 0;
     background: transparent;
 }
+#grass { height: 330px; }
 
 #grass .awesome { width: 32px; }
 
 .piece {
     position: absolute;
-    z-index: 9000;
+    z-index: 900;
 }
 
 #cloud {
     display: none;
     color: white;
-    position: absolute;
+    position: fixed;
     background: rgba(0, 0, 0, 0.8);
     width: 300px;
     /*height: 100px;*/
     padding: 10px;
+    z-index: 901;
 }
+
+.ui-dialog { z-index: 902; }
 
 #cloud-title, #cloud-desc, #cloud-icon { padding: 0; margin: 0; }
 
