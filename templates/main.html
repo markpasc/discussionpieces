@@ -169,19 +169,24 @@
             .appendTo(div);
         div.css('left', item.x);
         div.css('top',  item.y);
+        div.css('z-index', 500 + item.y);
         div.draggable({
-            'containment': '#grass',
-            'start': function (e) {
+            containment: '#grass',
+            start: function (e) {
                 if ($('#cloud').is(':visible')) {
                     $('#cloud').hide('clip', {}, 200);
                 }
             },
-            'stop': function (e) {
+            stop: function (e) {
                 item.x = parseInt(div.css('left'));
                 item.y = parseInt(div.css('top'));
+                div.css('z-index', 500 + item.y);
                 $.post("/stuff/" + item.key,
                     {'x': item.x, 'y': item.y}
                 );
+            },
+            drag: function (e) {
+                div.css('z-index', 500 + parseInt(div.css('top')));
             }
         });
         div.click(clickerFor(item));
