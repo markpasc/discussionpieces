@@ -3,7 +3,7 @@ version: 1
 runtime: python
 api_version: 1
 
-skip_files: \.git
+skip_files: (^|/)(\.|RCS/|(app|index)\.ya?ml)|(\.py[co]|~)$
 
 handlers:
     - url: /assets
