@@ -57,6 +57,8 @@
     </div>
     
     <script type="text/javascript">
+    var logged_in = {% if user %}true{% else %}false{% endif %};
+    
     function clickerFor (item) {
         return function (e) {
             e.stopPropagation();
@@ -168,36 +170,56 @@
     }
 
     function makePiece (item) {
-        var div = $("<div/>")
-            .attr("class", "piece")
-            .attr("id", "piece-" + item.key)
-            .appendTo('#grass');
-        var img = $("<img/>")
-            .attr("src", "/assets/icons/" + item.icon)
-            .appendTo(div);
-        div.css('left', item.x);
-        div.css('top',  item.y);
-        div.css('z-index', 500 + item.y);
-        div.draggable({
-            containment: '#grass',
-            start: function (e) {
-                if ($('#cloud').is(':visible')) {
-                    $('#cloud').hide('clip', {}, 200);
-                }
-            },
-            stop: function (e) {
-                item.x = parseInt(div.css('left'));
-                item.y = parseInt(div.css('top'));
-                div.css('z-index', 500 + item.y);
-                $.post("/stuff/" + item.key,
-                    {'x': item.x, 'y': item.y}
-                );
-            },
-            drag: function (e) {
-                div.css('z-index', 500 + parseInt(div.css('top')));
-            }
-        });
-        div.click(clickerFor(item));
+        var piece = $('#piece-' + item.key);
+        var new_piece = piece.length == 0 ? true : false;
+        if (new_piece) {
+            piece = $("<div/>")
+                .attr("class", "piece")
+                .attr("id", "piece-" + item.key)
+                .appendTo('#grass');
+            var img = $("<img/>")
+                .attr("src", "/assets/icons/" + item.icon)
+                .appendTo(piece);
+            piece.click(clickerFor(item));
+            piece.draggable({
+                containment: '#grass',
+                start: function (e) {
+                    if ($('#cloud').is(':visible')) {
+                        $('#cloud').hide('clip', {}, 200);
+                    }
+                },
+                stop: function (e) {
+                    if (!logged_in)
+                        return;
+                    item.x = parseInt(piece.css('left'));
+                    item.y = parseInt(piece.css('top'));
+                    piece.css('z-index', 500 + item.y);
+                    $.post("/stuff/" + item.key,
+                        {'x': item.x, 'y': item.y}
+                    );
+                },
+                drag: function (e) {
+                    piece.css('z-index', 500 + parseInt(piece.css('top')));
+                },
+                revert: logged_in ? false : true,
+                revertDuration: 250
+            });
+        }
+                
+        if (new_piece) {
+            piece.hide();
+            piece.css('left', item.x);
+            piece.css('top',  item.y);
+            piece.css('z-index', 500 + item.y);
+            piece.fadeIn('slow');
+        }
+        else {
+            piece.animate({
+                left: item.x,
+                top:  item.y,
+                zIndex: 500 + item.y,
+            }, 1000);
+        }
     }
     
     function setUpStuff () {
@@ -288,6 +310,8 @@
         drawSky();
         drawGrass();
         setUpStuff();
+        
+        setInterval("setUpStuff()", 60000);
         
         if ($('#add-button').get(0)) {
             drawAddButton();
