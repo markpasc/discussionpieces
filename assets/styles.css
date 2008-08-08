@@ -35,6 +35,7 @@ body, #content, #sky, #grass {
 .piece {
     position: absolute;
     z-index: 900;
+    cursor: move;
 }
 
 #cloud {
